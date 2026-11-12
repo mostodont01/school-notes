@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Block commits that contain secrets. Enabled with: git config core.hooksPath .githooks
+set -euo pipefail
+
+if command -v gitleaks >/dev/null 2>&1; then
+    exec gitleaks git --staged --no-banner --redact
+fi
+
+# Fallback: scan the added lines of the staged diff for common key formats.
+patterns=(
+    'sk-ant-[A-Za-z0-9_-]{20,}'                       # Anthropic
+    'sk-(proj-)?[A-Za-z0-9_-]{32,}'                   # OpenAI-style
+    'gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}'  # GitHub
+    'AKIA[0-9A-Z]{16}'                                # AWS
+    'AIza[0-9A-Za-z_-]{35}'                           # Google
+    '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+    '(api[_-]?key|secret|token|password)["'"'"']?[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'[:space:]]{16,}'
+)
+added=$(git diff --cached --no-color -U0 | grep -E '^\+' | grep -vE '^\+\+\+ ' || true)
+found=0
+for p in "${patterns[@]}"; do
+    if grep -inE -- "$p" <<<"$added" >/dev/null; then
+        echo "pre-commit: possible secret matching /$p/" >&2
+        found=1
+    fi
+done
+for f in $(git diff --cached --name-only --diff-filter=A); do
+    case "$(basename "$f")" in
+        .env|.env.*|config.toml|*.key|secrets*) echo "pre-commit: refusing to commit $f" >&2; found=1 ;;
+    esac
+done
+if [ "$found" -ne 0 ]; then
+    echo "Commit blocked. Keep keys in environment variables or ~/.config/school-notes/config.toml." >&2
+    exit 1
+fi

@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+
+% Language and fonts (XeLaTeX: native UTF-8)
+\usepackage{fontspec}
+\usepackage[czech]{babel}
+\usepackage[a4paper, margin=2.2cm]{geometry}
+\usepackage{microtype}
+
+% Math and chemistry
+\usepackage{amsmath, amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{chemfig}
+
+% Text formatting
+\usepackage{xcolor}
+\usepackage[normalem]{ulem}
+\usepackage{enumitem}
+\setlist{itemsep=2pt, topsep=4pt}
+
+% Blocks
+\usepackage{booktabs, tabularx}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small, columns=fullflexible, keepspaces=true,
+        frame=single, rulecolor=\color{gray!40}, backgroundcolor=\color{gray!5},
+        breaklines=true, showstringspaces=false,
+        keywordstyle=\color{blue!70!black}\bfseries,
+        commentstyle=\color{green!45!black}\itshape,
+        stringstyle=\color{red!65!black}}
+\usepackage{tcolorbox}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\usepackage[hidelinks]{hyperref}

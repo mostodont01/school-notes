@@ -1,0 +1,53 @@
+{
+  "title": "Pohyb a chemické reakce",
+  "subject": "Fyzika / Chemie",
+  "date": "12. 11. 2026",
+  "blocks": [
+    {"type": "heading", "level": 1, "text": "Rovnoměrný pohyb"},
+    {"type": "paragraph", "text": "Těleso se pohybuje <b>rovnoměrně</b>, když za stejné časy urazí <i>stejné</i> dráhy. Rychlost: <m>v = \\frac{s}{t}</m>, jednotka m·s<sup>-1</sup>. Pozor na 100 % & speciální znaky: $ # _ { } ~ ^ \\."},
+    {"type": "callout", "kind": "definition", "title": "", "text": "<b>Rychlost</b> je dráha uražená za jednotku času."},
+    {"type": "equation", "latex": "s = v \\cdot t \\qquad t = \\frac{s}{v}"},
+    {"type": "list", "ordered": false, "items": [
+      {"text": "druhy pohybu", "level": 0},
+      {"text": "rovnoměrný", "level": 1},
+      {"text": "zrychlený", "level": 1},
+      {"text": "rovnoměrně zrychlený: <m>a = konst.</m>", "level": 2},
+      {"text": "veličiny", "level": 0}
+    ]},
+    {"type": "list", "ordered": true, "items": [
+      {"text": "změřit dráhu", "level": 0},
+      {"text": "změřit čas", "level": 0},
+      {"text": "spočítat <red>rychlost</red>", "level": 0}
+    ]},
+    {"type": "table", "headers": ["Veličina", "Značka", "Jednotka"], "rows": [
+      ["dráha", "s", "m"],
+      ["čas", "t", "s"],
+      ["rychlost", "v"]
+    ]},
+    {"type": "function_graph", "functions": [
+      {"expression": "x^2", "label": "<m>y = x^2</m>"},
+      {"expression": "sin(x)", "label": "<m>y = \\sin x</m>"}
+    ], "x_min": -3, "x_max": 3, "y_min": -1.5, "y_max": 9, "x_label": "x", "y_label": "y", "title": "Grafy funkcí"},
+    {"type": "rule"},
+    {"type": "heading", "level": 1, "text": "Chemické reakce"},
+    {"type": "heading", "level": 2, "text": "Hoření vodíku"},
+    {"type": "reaction", "mhchem": "2 H2 + O2 -> 2 H2O"},
+    {"type": "paragraph", "text": "Kyselina sírová <ce>H2SO4</ce> disociuje na <ce>SO4^2-</ce>."},
+    {"type": "structure", "chemfig": "H-C(-[2]H)(-[6]H)-H", "caption": "methan <ce>CH4</ce>"},
+    {"type": "callout", "kind": "important", "title": "Bezpečnost", "text": "Vodík s kyslíkem tvoří <b>třaskavou směs</b>."},
+    {"type": "bar_chart", "categories": ["Leden", "Únor", "Březen"], "series": [
+      {"name": "2025", "values": [3, 5, 4]},
+      {"name": "2026", "values": [4, 6, 7]}
+    ], "x_label": "", "y_label": "počet pokusů", "title": "Pokusy v laboratoři"},
+    {"type": "line_chart", "series": [
+      {"name": "teplota", "points": [{"x": 0, "y": 20}, {"x": 1, "y": 35}, {"x": 2, "y": 48}, {"x": 3, "y": 55}]}
+    ], "x_label": "čas [min]", "y_label": "<m>t</m> [°C]", "title": "Ohřev vody"},
+    {"type": "pie_chart", "slices": [
+      {"label": "dusík", "value": 78},
+      {"label": "kyslík", "value": 21},
+      {"label": "ostatní", "value": 1}
+    ], "title": "Složení vzduchu"},
+    {"type": "heading", "level": 3, "text": "Výpočet v Pythonu"},
+    {"type": "code", "language": "python", "code": "def rychlost(s, t):\n    # dráha / čas\n    return s / t\n\nprint(rychlost(100, 9.58))"}
+  ]
+}
