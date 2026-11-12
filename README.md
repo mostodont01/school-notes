@@ -1,5 +1,7 @@
 # School Notes
 
+[![CI](https://github.com/mostodont01/school-notes/actions/workflows/ci.yml/badge.svg)](https://github.com/mostodont01/school-notes/actions/workflows/ci.yml)
+
 Write fast, messy notes in class → an LLM figures out the structure → a clean PDF.
 
 ```
