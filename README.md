@@ -33,7 +33,8 @@ uv run pytest                                                  # tests
 
 ## API keys and secrets
 
-**No key ever goes into this repository.** Backends read credentials only from:
+The default backend uses your existing **Claude Code login** (`claude -p`), so no API key is
+needed at all. **No key ever goes into this repository.** Other backends read credentials only from:
 
 - environment variables (e.g. `ANTHROPIC_API_KEY`), or
 - the user config file `~/.config/school-notes/config.toml`, which lives outside the repo.

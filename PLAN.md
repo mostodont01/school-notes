@@ -32,12 +32,11 @@ lesson.txt ─▶ LLM backend ─▶ lesson.json ─▶ render/ ─▶ lesson.te
 
 ### M2: LLM backends
 - [ ] System prompt (`prompt.md`) + a cleaned JSON-schema export for all backends
-- [ ] `claude_cli` backend (`claude -p --json-schema`, uses the existing Claude Code login)
-- [ ] `ollama` backend (`format: <schema>`, configurable URL, so it can reach the desktop over Tailscale)
-- [ ] `claude_api` backend (anthropic SDK, structured outputs)
+- [ ] `claude_cli` backend, **the default** (`claude -p --json-schema`): uses the existing Claude Code login, so there are no API keys to manage or leak
+- [ ] `ollama` backend (optional; `format: <schema>`, configurable URL, so it can reach the desktop over Tailscale)
 - [ ] Config file + backend selection
 - [ ] Messy Czech fixture notes (math, physics, chemistry, history) + opt-in live tests
-- [ ] **Open question:** which backend is the default (API access? desktop PC with Quadro K4000?)
+- Dropped: a direct Claude API backend (it would need an API key; the CLI login covers it)
 
 ### M3: QML app
 - [ ] Window: editor | PDF preview (QtQuick.Pdf)

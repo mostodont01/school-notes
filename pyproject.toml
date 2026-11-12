@@ -11,7 +11,6 @@ dependencies = [
 
 [project.optional-dependencies]
 ui = ["PySide6>=6.8"]
-claude-api = ["anthropic>=0.80"]
 
 [dependency-groups]
 dev = ["pytest>=8"]

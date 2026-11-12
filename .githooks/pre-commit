@@ -2,11 +2,14 @@
 # Block commits that contain secrets. Enabled with: git config core.hooksPath .githooks
 set -euo pipefail
 
+found=0
 if command -v gitleaks >/dev/null 2>&1; then
-    exec gitleaks git --staged --no-banner --redact
+    gitleaks git --pre-commit --staged --no-banner --redact --verbose . || found=1
+else
+    echo "pre-commit: gitleaks not installed, using built-in patterns only" >&2
 fi
 
-# Fallback: scan the added lines of the staged diff for common key formats.
+# Built-in check as well: added lines of the staged diff vs common key formats.
 patterns=(
     'sk-ant-[A-Za-z0-9_-]{20,}'                       # Anthropic
     'sk-(proj-)?[A-Za-z0-9_-]{32,}'                   # OpenAI-style
@@ -17,7 +20,6 @@ patterns=(
     '(api[_-]?key|secret|token|password)["'"'"']?[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"'[:space:]]{16,}'
 )
 added=$(git diff --cached --no-color -U0 | grep -E '^\+' | grep -vE '^\+\+\+ ' || true)
-found=0
 for p in "${patterns[@]}"; do
     if grep -inE -- "$p" <<<"$added" >/dev/null; then
         echo "pre-commit: possible secret matching /$p/" >&2
