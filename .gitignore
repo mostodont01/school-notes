@@ -33,3 +33,4 @@ notes/
 # Generated next to test notes
 tests/fixtures/*.pdf
 tests/fixtures/*.tex
+tests/fixtures/live-out/

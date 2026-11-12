@@ -1,6 +1,6 @@
 # Plan
 
-Progress is tracked in **GitHub milestones** (issues grouped per milestone). This file has the overview and the decisions behind them.
+Day-to-day progress is tracked in Claude Code tasks; the GitHub milestones mirror the big steps. This file has the overview and the decisions behind them.
 
 ## Architecture
 
@@ -31,11 +31,11 @@ lesson.txt ─▶ LLM backend ─▶ lesson.json ─▶ render/ ─▶ lesson.te
 - [x] Tests, plus a visual check of the all-elements fixture
 
 ### M2: LLM backends
-- [ ] System prompt (`prompt.md`) + a cleaned JSON-schema export for all backends
-- [ ] `claude_cli` backend, **the default** (`claude -p --json-schema`): uses the existing Claude Code login, so there are no API keys to manage or leak
+- [x] System prompt (`prompt.md`) + a cleaned JSON-schema export for all backends
+- [x] `claude_cli` backend, **the default** (`claude -p --json-schema`): uses the existing Claude Code login, so there are no API keys to manage or leak
 - [ ] `ollama` backend (optional; `format: <schema>`, configurable URL, so it can reach the desktop over Tailscale)
-- [ ] Config file + backend selection
-- [ ] Messy Czech fixture notes (math, physics, chemistry, history) + opt-in live tests
+- [x] Config file + backend selection
+- [x] Messy Czech fixture notes (math, physics, chemistry, history) + opt-in live tests
 - Dropped: a direct Claude API backend (it would need an API key; the CLI login covers it)
 
 ### M3: QML app

@@ -22,6 +22,7 @@ Status and roadmap: see [PLAN.md](PLAN.md) and the GitHub milestones.
 ## Requirements
 
 - Python ≥ 3.12 and [uv](https://docs.astral.sh/uv/)
+- [Claude Code](https://claude.com/claude-code), logged in (the default LLM backend runs `claude -p`)
 - XeLaTeX with these packages (Debian/Ubuntu):
   `texlive-xetex texlive-lang-czechslovak texlive-science texlive-pictures texlive-latex-extra texlive-plain-generic`
 
@@ -29,8 +30,10 @@ Status and roadmap: see [PLAN.md](PLAN.md) and the GitHub milestones.
 
 ```bash
 uv sync
-uv run school-notes render tests/fixtures/all_elements.json   # JSON → .tex + .pdf
-uv run pytest                                                  # tests
+uv run school-notes format lesson.txt     # notes → LLM → lesson.json + .tex + .pdf
+uv run school-notes render lesson.json    # JSON → .tex + .pdf (no LLM, instant)
+uv run pytest                             # offline tests
+uv run pytest -m live                     # real LLM calls on tests/fixtures/*_messy.txt
 ```
 
 ## API keys and secrets

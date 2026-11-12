@@ -1,0 +1,9 @@
+chemie - kyseliny
+kyselina = latka co ve vode odstepuje H+ (arrhenius)
+pr. HCl -> H+ + Cl-
+H2SO4 kys. sirova, silna, dvojsytna
+  - zredeni: VZDY kyselinu do vody!!
+neutralizace: kyselina + hydroxid -> sul + voda
+HCl + NaOH -> NaCl + H2O
+pH < 7 kysele, =7 neutr, >7 zasadite
+struktura vody: H-O-H uhel 104,5 st

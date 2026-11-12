@@ -11,7 +11,9 @@ Return a JSON document that matches the given schema. The field descriptions in 
 
 ## Structure
 - `title`, `subject`, `date`: fill them only from what the notes say; otherwise leave them empty.
+- The `title` is already printed at the top. Don't repeat it as the first heading; use a level 1 heading only when the notes cover several main topics.
 - Headings: level 1 for the main topics, 2 for subtopics, 3 for minor headings.
+- Between a term and its explanation, use an en dash ("a > 0 – otevřená nahoru") or a colon, not "…".
 - Enumerations become one `list`. Indentation, dashes or "a)", "1." show nesting and order; nested items use `level`.
 - Data in columns or rows of comparable items become a `table`.
 - Definitions ("def", "=", "je to…"), warnings ("!", "pozor", "důležité") and worked examples ("př.", "např.") become a `callout` of the matching kind, when they stand out as such in the notes.

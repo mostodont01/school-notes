@@ -1,0 +1,9 @@
+mat - kvadr. fce
+y = ax^2+bx+c, a!=0
+graf = parabola, a>0 nahoru, a<0 dolu
+vrchol V[-b/2a; c-b^2/4a]
+diskriminant D=b^2-4ac
+D>0 2 koreny, D=0 1 koren, D<0 zadny (v R)
+x1,2 = (-b +- odm(D))/2a
+pr: x^2-5x+6=0 -> D=1 -> x1=3 x2=2
+graf y=x^2-5x+6 od 0 do 5
