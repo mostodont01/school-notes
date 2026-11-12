@@ -1,0 +1,21 @@
+fyzika 12.11.
+POHYB
+rovnomerny pohyb - za stejny cas stejna draha
+v=s/t   [v]=m/s
+druhy pohybu:
+- primocary
+- krivocary
+  - po kruznici
+- rovnomerny / nerovnomerny
+
+!! pozor jednotky prevadet na m a s
+
+pr. auto jede 72km/h -> 20 m/s (deleno 3,6)
+
+zrychleni a = delta v / delta t
+tabulka: veliciny
+draha s m
+cas t s
+rychlost v m/s
+
+graf s(t) pro v=2 m/s, t od 0 do 10 -> primka

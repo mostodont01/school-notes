@@ -20,3 +20,13 @@ def build_pdf(doc: Document, base: Path) -> CompileResult:
     tex = base.with_suffix(".tex")
     tex.write_text(render_document(doc), encoding="utf-8")
     return compile_tex(tex)
+
+
+def format_file(txt_path: Path, config=None) -> CompileResult:
+    """lesson.txt -> LLM -> lesson.json -> lesson.tex -> lesson.pdf."""
+    from .llm import format_notes
+
+    doc = format_notes(txt_path.read_text(encoding="utf-8"), config)
+    base = txt_path.with_suffix("")
+    save_document(doc, base.with_suffix(".json"))
+    return build_pdf(doc, base)

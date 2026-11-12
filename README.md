@@ -23,7 +23,7 @@ Status and roadmap: see [PLAN.md](PLAN.md) and the GitHub milestones.
 
 - Python ≥ 3.12 and [uv](https://docs.astral.sh/uv/)
 - XeLaTeX with these packages (Debian/Ubuntu):
-  `texlive-xetex texlive-lang-czechslovak texlive-science texlive-pictures texlive-latex-extra`
+  `texlive-xetex texlive-lang-czechslovak texlive-science texlive-pictures texlive-latex-extra texlive-plain-generic`
 
 ## Usage
 

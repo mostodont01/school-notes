@@ -29,3 +29,7 @@ notes/
 # Editors
 .vscode/
 .idea/
+
+# Generated next to test notes
+tests/fixtures/*.pdf
+tests/fixtures/*.tex
