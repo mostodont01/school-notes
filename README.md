@@ -26,7 +26,31 @@ Status and roadmap: see [PLAN.md](PLAN.md) and the GitHub milestones.
 - XeLaTeX with these packages (Debian/Ubuntu):
   `texlive-xetex texlive-lang-czechslovak texlive-science texlive-pictures texlive-latex-extra texlive-plain-generic`
 
-## Usage
+## The app
+
+```bash
+uv run school-notes-app
+```
+
+- **Sidebar:** subjects (folders) and their lessons, newest first. The dot shows the PDF state:
+  green = up to date, amber = text changed since the last format, grey = not formatted yet.
+- **Editor:** write messy notes. They autosave after 1.5 s, and every save keeps the previous
+  version in `<subject>/.backup/`.
+- **Preview:** the PDF, which keeps its scroll position when it is rebuilt. Ctrl + wheel zooms.
+
+| Key | Action |
+|---|---|
+| Ctrl+Enter | Format with Claude → PDF (runs in the background) |
+| Ctrl+S | Save now |
+| Ctrl+R | Re-render the PDF from the saved JSON (no LLM, quick) |
+| Ctrl+N | New lesson in the current subject (named from its title after formatting) |
+| Ctrl+Shift+N | New subject |
+
+Notes live in `~/School/Notes/<subject>/` (configurable in `~/.config/school-notes/config.toml`):
+`2026-11-12 Pohyb.txt` is what you write; the `.json`, `.tex` and `.pdf` files next to it are
+generated. Formatting needs internet; writing and saving don't.
+
+## Command line
 
 ```bash
 uv sync

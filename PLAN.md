@@ -38,14 +38,17 @@ lesson.txt ─▶ LLM backend ─▶ lesson.json ─▶ render/ ─▶ lesson.te
 - [x] Messy Czech fixture notes (math, physics, chemistry, history) + opt-in live tests
 - Dropped: a direct Claude API backend (it would need an API key; the CLI login covers it)
 
-### M3: QML app
-- [ ] Window: editor | PDF preview (QtQuick.Pdf)
-- [ ] Shortcuts: Ctrl+S / Ctrl+Enter / Ctrl+R / Ctrl+O / Ctrl+N
-- [ ] Background worker (LLM → render → compile) with status and error display
-- [ ] Keep the preview's scroll position after reload
+### M3: QML app ✅
+- [x] Notes library: subjects = folders, dated lessons, auto-named from the title after formatting
+- [x] Window in VL's style: sidebar | editor | PDF preview (own ListView of PdfPageImage)
+- [x] Shortcuts: Ctrl+Enter / Ctrl+S / Ctrl+R / Ctrl+N / Ctrl+Shift+N
+- [x] Background worker with status, offline-friendly errors; autosave; backups in .backup/
+- [x] Preview keeps its scroll position on reload
+- [x] Headless UI tests (fail on any Qt warning) + screenshot check
 
 ### M4: Later
 - [ ] Per-section caching: only changed parts go to the LLM
 - [ ] Automatic retry: send the compile error back to the LLM once
 - [ ] Nicer graph styling, more element types if needed
-- [ ] Packaging (AppImage)
+- [ ] Packaging (AppImage) / a desktop launcher
+- [ ] Rename and delete lessons/subjects from the sidebar
