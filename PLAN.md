@@ -51,6 +51,7 @@ lesson.txt ─▶ LLM backend ─▶ lesson.json ─▶ render/ ─▶ lesson.te
 - [ ] Per-section caching: only changed parts go to the LLM
 - [ ] Automatic retry: send the compile error back to the LLM once
 - [ ] Nicer graph styling, more element types if needed
-- [ ] Packaging (AppImage) / a desktop launcher
+- [x] App menu entry + logo (`school-notes install-desktop`)
+- [ ] Packaging (AppImage)
 - [ ] Rename and delete lessons/subjects from the sidebar
 - [ ] Stronger restructuring: today the model mostly keeps the student's order and wording (fixing diacritics); an option to reorganise more (idea from the first real test, parked)

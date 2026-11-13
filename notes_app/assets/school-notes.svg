@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- School Notes app icon, in VL's style: messy notes (the scribble) come in
+     and leave as a clean page. -->
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 256 256"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b2c52" />
+      <stop offset="1" stop-color="#0f1a30" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8ab8ff" />
+      <stop offset="1" stop-color="#5f95f5" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" rx="56" fill="url(#background)" />
+
+  <!-- Messy notes: a pencil scribble running into the page -->
+  <path d="M 0,150 C 10,128 20,176 30,146 C 38,122 46,170 54,138 C 58,124 62,150 66,140"
+        fill="none" stroke="#72a7ff" stroke-width="7" stroke-linecap="round"
+        stroke-linejoin="round" opacity="0.55" />
+
+  <!-- Page with a folded corner -->
+  <path d="M 86,40 H 160 L 200,80 V 196 A 20,20 0 0 1 180,216 H 86 A 20,20 0 0 1 66,196 V 60 A 20,20 0 0 1 86,40 Z"
+        fill="#72a7ff" fill-opacity="0.10" />
+  <path d="M 160,40 V 66 A 14,14 0 0 0 174,80 H 200 Z" fill="url(#accent)" />
+  <path d="M 86,40 H 160 L 200,80 V 196 A 20,20 0 0 1 180,216 H 86 A 20,20 0 0 1 66,196 V 60 A 20,20 0 0 1 86,40 Z"
+        fill="none" stroke="#72a7ff" stroke-width="8" stroke-linejoin="round" />
+
+  <!-- Clean notes: heading, text lines and a bullet list -->
+  <rect x="88" y="68" width="56" height="13" rx="6.5" fill="#e8eef8" />
+  <g fill="none" stroke="#e8eef8" stroke-width="7" stroke-linecap="round" opacity="0.6">
+    <path d="M 90,104 H 176" />
+    <path d="M 90,124 H 160" />
+    <path d="M 108,152 H 170" />
+    <path d="M 108,174 H 156" />
+  </g>
+  <g fill="url(#accent)">
+    <circle cx="93" cy="152" r="6" />
+    <circle cx="93" cy="174" r="6" />
+  </g>
+
+  <!-- Sparkle: formatted by the AI -->
+  <path d="M 206,170 Q 210,190 230,194 Q 210,198 206,218 Q 202,198 182,194 Q 202,190 206,170 Z"
+        fill="#e8eef8" stroke="#0f1a30" stroke-width="6" stroke-linejoin="round" />
+</svg>

@@ -6,18 +6,32 @@ only our system prompt, the schema and the notes.
 """
 
 import json
+import os
 import shutil
 import subprocess
 import tempfile
+from pathlib import Path
 
 from ..config import Config
 from . import SYSTEM_PROMPT, LLMError, document_schema_json
 from .usage import Usage
 
 
+def find_claude() -> str | None:
+    """The claude binary. Apps started from the menu may not have ~/.local/bin
+    in PATH, so also look where the Claude Code installer puts it."""
+    found = shutil.which("claude")
+    if found:
+        return found
+    for candidate in (Path.home() / ".local" / "bin" / "claude", Path.home() / ".claude" / "local" / "claude"):
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
+
+
 def command(config: Config) -> list[str]:
     cmd = [
-        "claude", "-p",
+        find_claude() or "claude", "-p",
         # stream-json (+ --verbose) also carries the rate_limit_event with the
         # plan's 5-hour and weekly usage; plain json doesn't.
         "--output-format", "stream-json", "--verbose",
@@ -37,7 +51,7 @@ def command(config: Config) -> list[str]:
 
 
 def run(raw: str, config: Config) -> dict:
-    if shutil.which("claude") is None:
+    if find_claude() is None:
         raise LLMError("The 'claude' command was not found. Install Claude Code and log in.")
     # Run in an empty directory so no project files or CLAUDE.md are picked up.
     with tempfile.TemporaryDirectory(prefix="school-notes-llm-") as cwd:

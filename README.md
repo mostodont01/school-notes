@@ -28,9 +28,16 @@ Status and roadmap: see [PLAN.md](PLAN.md) and the GitHub milestones.
 
 ## The app
 
+<img src="notes_app/assets/school-notes.svg" width="96" align="right" alt="School Notes logo">
+
+Add it to the app menu once (then start it like any other app, no terminal):
+
 ```bash
-uv run school-notes-app
+uv sync
+uv run school-notes install-desktop      # --uninstall removes it again
 ```
+
+Or run it directly with `uv run school-notes-app`.
 
 - **Sidebar:** subjects (folders) and their lessons, newest first. The dot shows the PDF state:
   green = up to date, amber = text changed since the last format, grey = not formatted yet.

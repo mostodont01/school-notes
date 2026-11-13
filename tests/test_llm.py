@@ -34,7 +34,7 @@ def fake_claude(monkeypatch, stdout: str, returncode: int = 0):
         calls["input"] = kwargs["input"]
         return subprocess.CompletedProcess(cmd, returncode, stdout=stdout, stderr="boom")
 
-    monkeypatch.setattr(claude_cli.shutil, "which", lambda _: "/usr/bin/claude")
+    monkeypatch.setattr(claude_cli, "find_claude", lambda: "/usr/bin/claude")
     monkeypatch.setattr(claude_cli.subprocess, "run", run)
     return calls
 

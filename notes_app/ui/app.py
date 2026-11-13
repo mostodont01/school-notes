@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import QLoggingCategory, QUrl
-from PySide6.QtGui import QFontDatabase, QGuiApplication
+from PySide6.QtGui import QFontDatabase, QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtQuickControls2 import QQuickStyle
 
@@ -12,6 +12,7 @@ from ..config import Config
 from .backend import NotesBackend
 
 QML_DIR = Path(__file__).parent / "qml"
+ICON = Path(__file__).parent.parent / "assets" / "school-notes.svg"
 
 
 def create_engine(notes: NotesBackend) -> QQmlApplicationEngine:
@@ -32,7 +33,8 @@ def main(argv: list[str] | None = None, config: Config | None = None) -> int:
     QQuickStyle.setStyle("Fusion")
     app = QGuiApplication(argv if argv is not None else sys.argv)
     app.setApplicationName("School Notes")
-    app.setDesktopFileName("school-notes")
+    app.setDesktopFileName("school-notes")  # matches school-notes.desktop
+    app.setWindowIcon(QIcon(str(ICON)))
 
     notes = NotesBackend(config)
     engine = create_engine(notes)
