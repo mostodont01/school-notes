@@ -37,6 +37,11 @@ uv run school-notes-app
 - **Editor:** write messy notes. They autosave after 1.5 s, and every save keeps the previous
   version in `<subject>/.backup/`.
 - **Preview:** the PDF, which keeps its scroll position when it is rebuilt. Ctrl + wheel zooms.
+- **Claude usage** (bottom of the sidebar): the last format's tokens, and bars for how full your
+  plan's 5-hour and weekly windows are, with reset times. The limits come from each `claude -p`
+  reply and, fresher and for free, from the
+  Claude Code status bar's shared snapshot (`/tmp/mugshot_ratelimits_global.json`) when it's installed. Anthropic reports
+  only how full a window is, not its size in tokens.
 
 | Key | Action |
 |---|---|

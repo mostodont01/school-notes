@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from notes_app.config import Config
-from notes_app.llm import LLMError
+from notes_app.llm import LLMError, LLMResult
 from notes_app.pipeline import load_document
 from notes_app.ui import backend as backend_module
 from notes_app.ui.backend import NotesBackend
@@ -58,7 +58,7 @@ def test_switching_lessons_saves_first(notes):
 
 @needs_tex
 def test_format_writes_pdf_and_names_the_lesson(notes, qtbot, monkeypatch):
-    monkeypatch.setattr(backend_module, "format_notes", lambda text, config: FIXTURE)
+    monkeypatch.setattr(backend_module, "structure_notes", lambda text, config: LLMResult(FIXTURE, None))
     notes.newSubject("Fyzika")
     notes.newLesson()
     notes.edit("pohyb ...")
@@ -71,7 +71,7 @@ def test_format_writes_pdf_and_names_the_lesson(notes, qtbot, monkeypatch):
     assert notes.lessons[0]["state"] == "ok"
 
     # Re-render from the cached JSON, without the LLM.
-    monkeypatch.setattr(backend_module, "format_notes", lambda *a: pytest.fail("LLM called"))
+    monkeypatch.setattr(backend_module, "structure_notes", lambda *a: pytest.fail("LLM called"))
     revision = notes.pdfRevision
     with qtbot.waitSignal(notes._jobFinished, timeout=60000):
         notes.rerender()
@@ -82,7 +82,7 @@ def test_offline_error_keeps_text(notes, qtbot, monkeypatch):
     def offline(text, config):
         raise LLMError("claude failed (exit 1): getaddrinfo ENOTFOUND api.anthropic.com")
 
-    monkeypatch.setattr(backend_module, "format_notes", offline)
+    monkeypatch.setattr(backend_module, "structure_notes", offline)
     notes.newSubject("M")
     notes.newLesson()
     notes.edit("poznamky v hodine")
@@ -94,8 +94,34 @@ def test_offline_error_keeps_text(notes, qtbot, monkeypatch):
 
 
 def test_empty_lesson_is_not_sent(notes, monkeypatch):
-    monkeypatch.setattr(backend_module, "format_notes", lambda *a: pytest.fail("LLM called"))
+    monkeypatch.setattr(backend_module, "structure_notes", lambda *a: pytest.fail("LLM called"))
     notes.newSubject("M")
     notes.newLesson()
     notes.format()
     assert not notes.busy
+
+
+def test_usage_view_formats_tokens_and_windows():
+    from notes_app.llm.usage import Usage, Window
+    from notes_app.ui.backend import usage_view
+    now = 1_794_560_000.0
+    view = usage_view(Usage(3210, 845, Window(0.19, now + 2 * 3600 + 600), Window(0.31, now + 3 * 86400),
+                            at=now), now=now)
+    assert view["tokens"] == "3.2k in · 845 out" and view["hasTokens"]
+    assert view["fiveHour"]["used"] == 0.19 and view["fiveHour"]["reset"].startswith("resets in 2 h 10 min")
+    assert view["week"]["reset"].startswith("resets in 3 d 0 h")
+    # A window whose reset time has passed shows as empty.
+    assert usage_view(Usage(1, 1, Window(0.9, now - 1), None, at=now), now=now)["fiveHour"]["used"] == 0.0
+    assert not usage_view(None, now=now)["fiveHour"]["known"]
+
+
+def test_usage_comes_from_the_statusbar_snapshot(tmp_path, monkeypatch, qtbot):
+    import json, time
+    bar = tmp_path / "bar.json"
+    bar.write_text(json.dumps({"five_hour": {"used_percentage": 40, "resets_at": time.time() + 3600},
+                               "seven_day": {"used_percentage": 75, "resets_at": time.time() + 86400}}))
+    monkeypatch.setenv("DOOMBAR_RATELIMITS", str(bar))
+    b = NotesBackend(Config(notes_dir=tmp_path / "Notes"))
+    assert b.usage["fiveHour"]["used"] == 0.4 and b.usage["week"]["used"] == 0.75
+    assert not b.usage["hasTokens"]
+    b.shutdown()

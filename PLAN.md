@@ -33,7 +33,8 @@ lesson.txt ─▶ LLM backend ─▶ lesson.json ─▶ render/ ─▶ lesson.te
 ### M2: LLM backends
 - [x] System prompt (`prompt.md`) + a cleaned JSON-schema export for all backends
 - [x] `claude_cli` backend, **the default** (`claude -p --json-schema`): uses the existing Claude Code login, so there are no API keys to manage or leak
-- [ ] `ollama` backend (optional; `format: <schema>`, configurable URL, so it can reach the desktop over Tailscale)
+- [x] Token usage + plan limits (5 h / week): from `claude -p` stream-json and the status bar's snapshot; bars in the app
+- Deferred (2026-11-13, not now): `ollama` backend (desktop over Tailscale)
 - [x] Config file + backend selection
 - [x] Messy Czech fixture notes (math, physics, chemistry, history) + opt-in live tests
 - Dropped: a direct Claude API backend (it would need an API key; the CLI login covers it)
@@ -52,3 +53,4 @@ lesson.txt ─▶ LLM backend ─▶ lesson.json ─▶ render/ ─▶ lesson.te
 - [ ] Nicer graph styling, more element types if needed
 - [ ] Packaging (AppImage) / a desktop launcher
 - [ ] Rename and delete lessons/subjects from the sidebar
+- [ ] Stronger restructuring: today the model mostly keeps the student's order and wording (fixing diacritics); an option to reorganise more (idea from the first real test, parked)

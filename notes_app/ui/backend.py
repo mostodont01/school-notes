@@ -6,6 +6,8 @@ A job remembers which lesson it belongs to: switching lessons while it runs
 is fine, and its result is applied to the right files.
 """
 
+import datetime as dt
+import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -13,7 +15,8 @@ from PySide6.QtCore import Property, QObject, QTimer, QUrl, Signal, Slot
 
 from ..config import Config, load_config
 from ..library import Lesson, Library
-from ..llm import LLMError, format_notes
+from ..llm import LLMError, structure_notes
+from ..llm.usage import Usage, Window, current_usage
 from ..pipeline import build_pdf, load_document, save_document
 
 _OFFLINE_HINTS = ("enotfound", "econnrefused", "network", "getaddrinfo", "connection", "offline", "timed out")
@@ -35,6 +38,7 @@ class NotesBackend(QObject):
     busyChanged = Signal()
     statusChanged = Signal()
     pdfChanged = Signal()
+    usageChanged = Signal()
     _jobFinished = Signal(object)     # emitted from the worker thread
 
     def __init__(self, config: Config | None = None, parent=None):
@@ -55,6 +59,13 @@ class NotesBackend(QObject):
         # Autosave: a crash or a closed lid must never lose class notes.
         self._autosave = QTimer(self, singleShot=True, interval=1500)
         self._autosave.timeout.connect(self.save)
+
+        # Plan limits: re-read now and then (two small files; Claude Code's
+        # status bar keeps one of them fresh), so the bars stay current.
+        self._usage: Usage | None = current_usage()
+        self._usage_timer = QTimer(self, interval=15000)
+        self._usage_timer.timeout.connect(self.refreshUsage)
+        self._usage_timer.start()
 
         subjects = self._library.subjects()
         if subjects:
@@ -122,6 +133,15 @@ class NotesBackend(QObject):
     def pdfRevision(self):
         """Bumped whenever the PDF file is rewritten, so the view reloads it."""
         return self._pdf_revision
+
+    @Property("QVariantMap", notify=usageChanged)
+    def usage(self):
+        return usage_view(self._usage)
+
+    @Slot()
+    def refreshUsage(self):
+        self._usage = current_usage()
+        self.usageChanged.emit()
 
     # -- navigation ---------------------------------------------------------
 
@@ -223,7 +243,7 @@ class NotesBackend(QObject):
         """Runs on the worker thread. Never raises: returns a result dict."""
         try:
             if kind == "format":
-                doc = format_notes(text, config)
+                doc = structure_notes(text, config).document
                 save_document(doc, lesson.json)
             else:
                 doc = load_document(lesson.json)
@@ -249,6 +269,7 @@ class NotesBackend(QObject):
             self._set_status(f"Failed: {result['error']}", "error")
         self.lessonsChanged.emit()
         self.pdfChanged.emit()
+        self.refreshUsage()
 
     # -- helpers ------------------------------------------------------------
 
@@ -269,3 +290,40 @@ class NotesBackend(QObject):
     def shutdown(self):
         self.save()
         self._executor.shutdown(wait=False, cancel_futures=True)
+
+
+# -- usage display -----------------------------------------------------------
+
+def _tokens(n: int) -> str:
+    return f"{n / 1000:.1f}k" if n >= 1000 else str(n)
+
+
+def _duration(seconds: float) -> str:
+    minutes = max(0, int(seconds // 60))
+    days, hours, mins = minutes // 1440, minutes // 60 % 24, minutes % 60
+    if days:
+        return f"{days} d {hours} h"
+    return f"{hours} h {mins} min" if hours else f"{mins} min"
+
+
+def _window(w: Window | None, now: float, day_format: str) -> dict:
+    if w is None:
+        return {"known": False, "used": 0.0, "reset": ""}
+    if now >= w.resets_at:
+        return {"known": True, "used": 0.0, "reset": "reset, fresh window"}
+    when = dt.datetime.fromtimestamp(w.resets_at).strftime(day_format)
+    return {"known": True, "used": w.used(now),
+            "reset": f"resets in {_duration(w.resets_at - now)} ({when})"}
+
+
+def usage_view(usage: Usage | None, now: float | None = None) -> dict:
+    """Everything the usage panel shows, as display-ready values."""
+    now = now or time.time()
+    has_tokens = bool(usage and (usage.input_tokens or usage.output_tokens))
+    return {
+        "hasTokens": has_tokens,
+        "tokens": f"{_tokens(usage.input_tokens)} in · {_tokens(usage.output_tokens)} out" if has_tokens else "",
+        "tokensWhen": dt.datetime.fromtimestamp(usage.at).strftime("%H:%M") if has_tokens else "",
+        "fiveHour": _window(usage and usage.five_hour, now, "%H:%M"),
+        "week": _window(usage and usage.seven_day, now, "%a %H:%M"),
+    }

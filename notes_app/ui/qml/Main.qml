@@ -203,6 +203,10 @@ ApplicationWindow {
 					}
 					ScrollBar.vertical: ScrollBar {}
 				}
+
+				UsagePanel {
+					Layout.fillWidth: true
+				}
 			}
 		}
 
