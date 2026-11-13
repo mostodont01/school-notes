@@ -2,6 +2,9 @@
 
 Example:
 
+    [library]
+    dir = "~/School/Notes"
+
     [llm]
     backend = "claude_cli"   # or "ollama"
     model = "opus"           # optional; claude_cli: alias or model id
@@ -23,6 +26,7 @@ CONFIG_PATH = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) /
 
 @dataclass
 class Config:
+    notes_dir: Path = Path("~/School/Notes").expanduser()
     backend: str = "claude_cli"
     model: str = ""
     effort: str = "medium"
@@ -36,6 +40,8 @@ def load_config(path: Path = CONFIG_PATH) -> Config:
     if path.exists():
         data = tomllib.loads(path.read_text(encoding="utf-8"))
         llm, ollama = data.get("llm", {}), data.get("ollama", {})
+        if "dir" in data.get("library", {}):
+            config.notes_dir = Path(data["library"]["dir"]).expanduser()
         config.backend = llm.get("backend", config.backend)
         config.model = llm.get("model", config.model)
         config.effort = llm.get("effort", config.effort)
