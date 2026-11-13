@@ -56,3 +56,21 @@ def test_rename_moves_generated_files(tmp_path):
 def test_empty_subject_rejected(tmp_path):
     with pytest.raises(ValueError):
         Library(tmp_path).new_subject(" / ")
+
+
+def test_save_keeps_previous_version(tmp_path):
+    lib = Library(tmp_path)
+    lesson = lib.new_lesson("M", "x", DAY)
+    lib.save_text(lesson, "first version")
+    lib.save_text(lesson, "")            # e.g. a bug or select-all + delete
+    lib.save_text(lesson, "new typing")  # the backup must survive this
+    backup = lesson.path.parent / ".backup" / lesson.path.name
+    assert backup.read_text() == "first version"
+    assert lesson.path.read_text() == "new typing"
+    assert [l.path.name for l in lib.lessons("M")] == [lesson.path.name]  # backups aren't lessons
+
+
+def test_dotted_topic(tmp_path):
+    lesson = Library(tmp_path).new_lesson("Dějepis", "1. světová válka", DAY)
+    assert lesson.topic == "1. světová válka"
+    assert lesson.pdf.name == "2026-11-13 1. světová válka.pdf"

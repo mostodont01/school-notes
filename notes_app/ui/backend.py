@@ -91,6 +91,11 @@ class NotesBackend(QObject):
             return ""
         return f"{self._lesson.topic or '(untitled)'}  ·  {self._lesson.date}".strip(" ·")
 
+    @Property(str, notify=currentChanged)
+    def text(self):
+        """The current lesson's text (the editor reads it once when created)."""
+        return self._text
+
     @Property(bool, notify=dirtyChanged)
     def dirty(self):
         return self._dirty
@@ -179,7 +184,7 @@ class NotesBackend(QObject):
         if not self._lesson or not self._dirty:
             return True
         try:
-            self._lesson.path.write_text(self._text, encoding="utf-8")
+            self._library.save_text(self._lesson, self._text)
         except OSError as e:
             self._set_status(f"Saving failed: {e}", "error")
             return False

@@ -15,9 +15,14 @@ def save_document(doc: Document, json_path: Path) -> None:
     json_path.write_text(doc.model_dump_json(indent=2) + "\n", encoding="utf-8")
 
 
+def sibling(base: Path, ext: str) -> Path:
+    """base + ext. Not with_suffix: names like "1. světová válka" contain dots."""
+    return base.parent / (base.name + ext)
+
+
 def build_pdf(doc: Document, base: Path) -> CompileResult:
     """Write base.tex from the document and compile it to base.pdf."""
-    tex = base.with_suffix(".tex")
+    tex = sibling(base, ".tex")
     tex.write_text(render_document(doc), encoding="utf-8")
     return compile_tex(tex)
 
@@ -27,6 +32,6 @@ def format_file(txt_path: Path, config=None) -> CompileResult:
     from .llm import format_notes
 
     doc = format_notes(txt_path.read_text(encoding="utf-8"), config)
-    base = txt_path.with_suffix("")
-    save_document(doc, base.with_suffix(".json"))
+    base = txt_path.with_suffix("")  # strips only ".txt"
+    save_document(doc, sibling(base, ".json"))
     return build_pdf(doc, base)

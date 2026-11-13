@@ -91,6 +91,24 @@ class Library:
         path.write_text("", encoding="utf-8")
         return Lesson(path)
 
+    def save_text(self, lesson: Lesson, text: str) -> None:
+        """Write the lesson, keeping the previous version in <subject>/.backup/.
+
+        A safety net: whatever goes wrong (a bug, an accidental select-all +
+        delete), the last saved version before it can still be found there.
+        """
+        if lesson.path.exists():
+            old = lesson.path.read_text(encoding="utf-8")
+            if old == text:
+                return
+            if old.strip():
+                backup = lesson.path.parent / ".backup" / lesson.path.name
+                backup.parent.mkdir(exist_ok=True)
+                backup.write_text(old, encoding="utf-8")
+        tmp = lesson.path.with_suffix(".txt.tmp")
+        tmp.write_text(text, encoding="utf-8")
+        tmp.replace(lesson.path)  # atomic: never a half-written file
+
     def rename_lesson(self, lesson: Lesson, topic: str) -> Lesson:
         """Change the topic part of the name; generated siblings move along."""
         stem = (lesson.date + " " if lesson.date else "") + clean_name(topic)
