@@ -6,14 +6,10 @@ Example:
     dir = "~/School/Notes"
 
     [llm]
-    backend = "claude_cli"   # or "ollama"
+    backend = "claude_cli"   # the only backend for now
     model = "opus"           # optional; claude_cli: alias or model id
     effort = "medium"        # optional; claude_cli only
     timeout = 300
-
-    [ollama]
-    url = "http://desktop:11434"   # e.g. the desktop PC over Tailscale
-    model = "qwen3:8b"
 """
 
 import os

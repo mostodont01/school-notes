@@ -39,9 +39,12 @@ def fake_claude(monkeypatch, stdout: str, returncode: int = 0):
     return calls
 
 
+def result_line(**fields):
+    return json.dumps({"type": "result", **fields})
+
+
 def test_valid_structured_output(monkeypatch):
-    calls = fake_claude(monkeypatch, json.dumps(
-        {"subtype": "success", "is_error": False, "structured_output": VALID}))
+    calls = fake_claude(monkeypatch, result_line(subtype="success", is_error=False, structured_output=VALID))
     doc = format_notes("poznamky", Config())
     assert calls["input"] == "poznamky"
     assert len(doc.blocks) == len(VALID["blocks"])
@@ -49,7 +52,7 @@ def test_valid_structured_output(monkeypatch):
 
 def test_invalid_document_is_rejected(monkeypatch):
     bad = {"title": "", "subject": "", "date": "", "blocks": [{"type": "nope"}]}
-    fake_claude(monkeypatch, json.dumps({"subtype": "success", "structured_output": bad}))
+    fake_claude(monkeypatch, result_line(subtype="success", structured_output=bad))
     with pytest.raises(LLMError, match="invalid document"):
         format_notes("x", Config())
 
@@ -67,10 +70,15 @@ def test_empty_notes_skip_the_llm(monkeypatch):
 
 def test_config_file(tmp_path):
     path = tmp_path / "config.toml"
-    path.write_text('[llm]\nbackend = "ollama"\n[ollama]\nurl = "http://desktop:11434"\n')
+    path.write_text('[library]\ndir = "/tmp/x"\n[llm]\nmodel = "sonnet"\n')
     config = load_config(path)
-    assert config.backend == "ollama" and config.ollama_url == "http://desktop:11434"
+    assert config.model == "sonnet" and str(config.notes_dir) == "/tmp/x"
     assert load_config(tmp_path / "missing.toml").backend == "claude_cli"
+
+
+def test_other_backends_are_not_available():
+    with pytest.raises(LLMError, match="not available"):
+        format_notes("x", Config(backend="ollama"))
 
 
 def _walk(node):

@@ -43,6 +43,11 @@ def main() -> int:
             print("\n".join(result.errors), file=sys.stderr)
             return 1
         print(result.pdf)
+        if args.command == "format":
+            from .llm.usage import current_usage, describe
+            usage = current_usage()
+            if usage:
+                print(describe(usage))
     return 0
 
 

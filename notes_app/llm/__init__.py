@@ -6,12 +6,14 @@ Pydantic, so the renderer only ever sees a valid Document.
 """
 
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 from pydantic import ValidationError
 
 from ..config import Config, load_config
 from ..schema import Document
+from .usage import Usage, load_usage, save_usage
 
 SYSTEM_PROMPT = (Path(__file__).parent / "prompt.md").read_text(encoding="utf-8")
 
@@ -52,15 +54,29 @@ def validate(data: dict | str) -> Document:
         raise LLMError(f"The model returned an invalid document:\n{e}") from e
 
 
-def format_notes(raw: str, config: Config | None = None) -> Document:
+@dataclass
+class LLMResult:
+    document: Document
+    usage: Usage | None  # tokens and plan limits, when the backend reports them
+
+
+def structure_notes(raw: str, config: Config | None = None) -> LLMResult:
     """Structure raw notes with the configured backend."""
     config = config or load_config()
     if not raw.strip():
-        return Document(title="", subject="", date="", blocks=[])
-    if config.backend == "claude_cli":
-        from .claude_cli import run
-    elif config.backend == "ollama":
-        from .ollama import run
-    else:
-        raise LLMError(f"Unknown backend {config.backend!r} (use 'claude_cli' or 'ollama')")
-    return validate(run(raw, config))
+        return LLMResult(Document(title="", subject="", date="", blocks=[]), None)
+    if config.backend != "claude_cli":
+        raise LLMError(f"Backend {config.backend!r} is not available (only 'claude_cli' for now)")
+    from .claude_cli import run
+    data, usage = run(raw, config)
+    if usage:
+        # Keep the last known limits if this reply didn't include them.
+        previous = load_usage()
+        if previous and usage.five_hour is None:
+            usage.five_hour, usage.seven_day = previous.five_hour, previous.seven_day
+        save_usage(usage)
+    return LLMResult(validate(data), usage)
+
+
+def format_notes(raw: str, config: Config | None = None) -> Document:
+    return structure_notes(raw, config).document

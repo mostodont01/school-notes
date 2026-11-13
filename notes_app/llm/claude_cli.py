@@ -12,12 +12,15 @@ import tempfile
 
 from ..config import Config
 from . import SYSTEM_PROMPT, LLMError, document_schema_json
+from .usage import Usage
 
 
 def command(config: Config) -> list[str]:
     cmd = [
         "claude", "-p",
-        "--output-format", "json",
+        # stream-json (+ --verbose) also carries the rate_limit_event with the
+        # plan's 5-hour and weekly usage; plain json doesn't.
+        "--output-format", "stream-json", "--verbose",
         "--json-schema", document_schema_json(),
         "--system-prompt", SYSTEM_PROMPT,
         "--tools", "",
@@ -45,17 +48,30 @@ def run(raw: str, config: Config) -> dict:
             )
         except subprocess.TimeoutExpired:
             raise LLMError(f"claude did not answer within {config.timeout:.0f} s") from None
-    try:
-        reply = json.loads(proc.stdout)
-    except json.JSONDecodeError:
-        detail = (proc.stderr or proc.stdout).strip()[-800:]
-        raise LLMError(f"claude failed (exit {proc.returncode}): {detail}") from None
-    if reply.get("is_error") or reply.get("subtype") != "success":
-        raise LLMError(f"claude reported an error: {str(reply.get('result', reply))[:800]}")
-    data = reply.get("structured_output")
+    return parse_stream(proc.stdout, proc.returncode, proc.stderr)
+
+
+def parse_stream(stdout: str, returncode: int = 0, stderr: str = "") -> tuple[dict, Usage]:
+    """Read the stream-json lines: the final result and the rate-limit info."""
+    result, rate_limit = None, None
+    for line in stdout.splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") == "result":
+            result = event
+        elif event.get("type") == "rate_limit_event":
+            rate_limit = event.get("rate_limit_info")
+    if result is None:
+        detail = (stderr or stdout).strip()[-800:]
+        raise LLMError(f"claude failed (exit {returncode}): {detail}")
+    if result.get("is_error") or result.get("subtype") != "success":
+        raise LLMError(f"claude reported an error: {str(result.get('result', result))[:800]}")
+    data = result.get("structured_output")
     if data is None:  # fall back to the text result
         try:
-            data = json.loads(reply.get("result", ""))
+            data = json.loads(result.get("result", ""))
         except json.JSONDecodeError:
             raise LLMError("claude returned no structured output") from None
-    return data
+    return data, Usage.from_stream(result, rate_limit)
